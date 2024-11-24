@@ -12,7 +12,8 @@ const questionSchema = new mongoose.Schema({
         validate: [arrayLimit, 'Choices array must have exactly 4 items'],
         required: true
     },
-    correctAnswer: { type: String, required: true }
+    correctAnswer: { type: String, required: true },
+    questionRat: { type: Number, required: true },
 });
 
 const Question = mongoose.model('Question', questionSchema);
