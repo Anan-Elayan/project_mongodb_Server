@@ -6,7 +6,13 @@ const userSchema = new mongoose.Schema({
     name: { type: String, required: true },
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
-    registerAs: { type: String, required: true },
+    role: { type: String, enum: ["teacher", "student"], required: true },
+    teacher_id: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+        default: null,
+      },
+  
 });
 
 userSchema.pre('save', async function(next) {

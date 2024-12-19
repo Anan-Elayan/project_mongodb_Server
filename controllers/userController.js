@@ -3,21 +3,41 @@ const User = require('../models/user');
 const bcrypt = require('bcrypt');
 
 const register = async (req, res) => {
-    const { name, email, password, registerAs } = req.body;
-    if (!name || !email || !password || !registerAs) {
-        return res.status(400).json({ message: 'All fields are required' });
-    }
+    const { name, email, password, role, teacher_id } = req.body;
     try {
-        const newUser = new User({ name, email, password, registerAs });
-        await newUser.save();
-        res.status(201).json({ message: 'User created successfully', user: newUser });
-    } catch (err) {
-        if (err.code === 11000) {
-            return res.status(400).json({ message: `The email ${err.keyValue.email} is already in use.` });
+        //check if user already exists
+        const userExists = await User.findOne({ email });
+
+        if (userExists) {
+            return res.status(400).json({ message: "Your email already registered" });
         }
+
+        if (role === "teacher") {
+            const teacher = new User({ name, email, password, role });
+            await teacher.save();
+            res.status(201).json({ message: "User registered successfully!" });
+        } else if (role === "student") {
+            const user = new User({ name, email, password, role, teacher_id });
+            await user.save();
+            res.status(201).json({ message: "User registered successfully!" });
+        } else {
+            res.status(400).json({ message: "Invalid role" });
+        }
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Server Error" });
+    }
+}
+
+const getTeachers = async (req, res) => {
+    try {
+        const teachers = await User.find({ role: 'teacher' });
+        res.status(200).json(teachers);
+    } catch (err) {
         res.status(500).json({ message: 'Server error', error: err });
     }
-};
+}
+
 
 
 const login = async (req, res) => {
@@ -64,16 +84,16 @@ const getUserId = async (req, res) => {
 
 // Get user data by ID
 const getUserById = async (req, res) => {
-    const { id } = req.body;  
+    const { id } = req.body;
     if (!id) {
         return res.status(400).json({ message: 'User ID is required' });
     }
     try {
-        const user = await User.findById(id);  
+        const user = await User.findById(id);
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
         }
-        res.status(200).json({  user });  
+        res.status(200).json({ user });
     } catch (err) {
         console.error("Error getting user data by ID:", err);
         res.status(500).json({ message: 'Server error', error: err.message });
@@ -119,12 +139,11 @@ const updateUserProfile = async (req, res) => {
 const analytics = async (req, res) => {
     try {
         const users = await User.find();
-        const totalAdmins = users.filter(user => user.registerAs === 'Admin').length;
-        const totalUsers = users.filter(user => user.registerAs === 'User').length;
-        res.json({ totalAdmins, totalUsers });
+        const totalStudents = users.filter(user => user.role === 'student').length;
+        res.json({ totalStudents });
     } catch (err) {
         res.status(500).json({ message: 'Server error', error: err });
     }
 };
 
-module.exports = { register, login, analytics, getUserId ,getUserById,updateUserProfile};
+module.exports = { register, login, analytics, getUserId, getUserById, updateUserProfile, getTeachers };
