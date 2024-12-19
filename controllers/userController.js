@@ -140,10 +140,10 @@ const analytics = async (req, res) => {
     try {
         const users = await User.find();
         const totalStudents = users.filter(user => user.role === 'student').length;
-        res.json({ totalStudents });
+        res.json({totalStudents});
     } catch (err) {
         res.status(500).json({ message: 'Server error', error: err });
     }
 };
 
-module.exports = { register, login, analytics, getUserId, getUserById, updateUserProfile, getTeachers };
+module.exports = { register, login, analytics, getUserId, getUserById, updateUserProfile ,getTeachers};
