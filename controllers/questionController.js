@@ -3,16 +3,16 @@ const Question = require('../models/question');
 
 
 const addQuestion = async (req, res) => {
-    const { question, choices, correctAnswer, questionRat } = req.body;
+    const { question, choices, correctAnswer, questionRat, teacherId } = req.body;
 
     // Ensure the question and answer data is valid
-    if (!question || choices.length !== 4 || !correctAnswer || !choices.includes(correctAnswer) || !questionRat) {
+    if (!question || !teacherId || choices.length !== 4 || !correctAnswer || !choices.includes(correctAnswer) || !questionRat) {
         return res.status(400).json({ message: 'Invalid question or answer' });
     }
 
     try {
         // Create a new question object with the provided data
-        const newQuestion = new Question({ question, choices, correctAnswer, questionRat });
+        const newQuestion = new Question({ question, choices, correctAnswer, questionRat, teacherId });
 
         // Save the new question to the database
         await newQuestion.save();
@@ -39,16 +39,70 @@ const getQuestions = async (req, res) => {
 };
 
 
-// Method to get the total count of questions
 const getQuestionCount = async (req, res) => {
+    const { teacherId } = req.body;
+
+    // Validate that teacherId is provided
+    if (!teacherId) {
+        return res.status(400).json({ message: 'Teacher ID is required' });
+    }
+
     try {
-        // Use countDocuments() to get the number of documents in the Question collection
-        const questionCount = await Question.countDocuments();
+        // Use countDocuments() to count questions specific to the teacher
+        const questionCount = await Question.countDocuments({ teacherId });
+
         res.status(200).json({ totalQuestions: questionCount });
+    } catch (err) {
+        // Handle server error
+        res.status(500).json({ message: 'Server error', error: err });
+    }
+};
+
+
+// Method to get questions based on teacherId
+const getQuestionsByTeacherId = async (req, res) => {
+    const { teacherId } = req.body;
+
+    // Ensure teacherId is provided
+    if (!teacherId) {
+        return res.status(400).json({ message: 'Teacher ID is required' });
+    }
+
+    try {
+        // Find all questions with the provided teacherId
+        const questions = await Question.find({ teacherId });
+
+        if (questions.length === 0) {
+            return res.status(404).json({ message: 'No questions found for the provided teacher ID' });
+        }
+
+        res.status(200).json(questions);
+    } catch (err) {
+        res.status(500).json({ message: 'Server error', error: err });
+    }
+};
+
+const deleteQuestionById = async (req, res) => {
+    const { questionId } = req.body;
+
+    // Ensure the questionId is provided
+    if (!questionId) {
+        return res.status(400).json({ message: 'Question ID is required' });
+    }
+
+    try {
+        // Attempt to delete the question with the provided ID
+        const deletedQuestion = await Question.findByIdAndDelete(questionId);
+
+        if (!deletedQuestion) {
+            return res.status(404).json({ message: 'Question not found' });
+        }
+
+        res.status(200).json({ message: 'Question deleted successfully' });
     } catch (err) {
         res.status(500).json({ message: 'Server error', error: err });
     }
 };
 
 
-module.exports = { addQuestion, getQuestions, getQuestionCount };
+module.exports = { addQuestion, getQuestions, getQuestionCount, getQuestionsByTeacherId, deleteQuestionById };
