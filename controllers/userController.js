@@ -137,13 +137,23 @@ const updateUserProfile = async (req, res) => {
 
 
 const analytics = async (req, res) => {
+    const { teacher_id } = req.body; // Get the teacher ID from the request body
+
+    if (!teacher_id) {
+        return res.status(400).json({ message: 'Teacher ID is required' });
+    }
+
     try {
-        const users = await User.find();
-        const totalStudents = users.filter(user => user.role === 'student').length;
-        res.json({totalStudents});
+        // Find students with the specified teacher_id
+        const students = await User.find({ role: 'student', teacher_id });
+
+        // Return the count of students
+        res.json({ totalStudents: students.length });
     } catch (err) {
-        res.status(500).json({ message: 'Server error', error: err });
+        console.error('Error fetching analytics:', err);
+        res.status(500).json({ message: 'Server error', error: err.message });
     }
 };
+
 
 module.exports = { register, login, analytics, getUserId, getUserById, updateUserProfile ,getTeachers};

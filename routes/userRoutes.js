@@ -5,7 +5,7 @@ const { register, login, analytics, getUserId, getUserById,updateUserProfile,get
 
 router.post('/register', register);
 router.post('/login', login);
-router.get('/analytics', analytics);
+router.post('/analytics', analytics);
 router.get('/getTeachers', getTeachers);
 router.post('/getUserById', getUserById);
 router.post('/getUserId', getUserId);

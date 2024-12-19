@@ -1,5 +1,7 @@
 
 const Question = require('../models/question');
+
+
 const addQuestion = async (req, res) => {
     const { question, choices, correctAnswer, questionRat } = req.body;
 
@@ -11,10 +13,10 @@ const addQuestion = async (req, res) => {
     try {
         // Create a new question object with the provided data
         const newQuestion = new Question({ question, choices, correctAnswer, questionRat });
-        
+
         // Save the new question to the database
         await newQuestion.save();
-        
+
         // Respond with success message and the new question data
         res.status(201).json({ message: 'Question added successfully', question: newQuestion });
     } catch (err) {
@@ -49,4 +51,4 @@ const getQuestionCount = async (req, res) => {
 };
 
 
-module.exports = { addQuestion, getQuestions,getQuestionCount };
+module.exports = { addQuestion, getQuestions, getQuestionCount };
