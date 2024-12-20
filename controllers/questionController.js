@@ -105,4 +105,33 @@ const deleteQuestionById = async (req, res) => {
 };
 
 
-module.exports = { addQuestion, getQuestions, getQuestionCount, getQuestionsByTeacherId, deleteQuestionById };
+// Method to update a question by ID
+const updateQuestion = async (req, res) => {
+    const { questionId, question, choices, correctAnswer, questionRat } = req.body;
+
+    // Validate the input
+    if (!questionId || !question || !choices || choices.length !== 4 || !correctAnswer || !choices.includes(correctAnswer) || !questionRat) {
+        return res.status(400).json({ message: 'Invalid question or answer data' });
+    }
+
+    try {
+        // Find the question by ID and update it
+        const updatedQuestion = await Question.findByIdAndUpdate(
+            questionId,
+            { question, choices, correctAnswer, questionRat },
+            { new: true } 
+        );
+
+        if (!updatedQuestion) {
+            return res.status(404).json({ message: 'Question not found' });
+        }
+
+        // Return success message and the updated question data
+        res.status(200).json({ message: 'Question updated successfully', question: updatedQuestion });
+    } catch (err) {
+        // Handle server errors
+        res.status(500).json({ message: 'Server error', error: err });
+    }
+};
+
+module.exports = { addQuestion, getQuestions, getQuestionCount, getQuestionsByTeacherId, deleteQuestionById,updateQuestion };

@@ -156,4 +156,32 @@ const analytics = async (req, res) => {
 };
 
 
-module.exports = { register, login, analytics, getUserId, getUserById, updateUserProfile ,getTeachers};
+const getStudentsByTeacherId = async (req, res) => {
+    const { teacher_id } = req.body; // Extract teacher ID from the request body
+
+    if (!teacher_id) {
+        return res.status(400).json({ message: 'Teacher ID is required' });
+    }
+
+    try {
+        // Fetch teacher by ID to ensure the teacher exists
+        const teacher = await User.findOne({ _id: teacher_id, role: 'teacher' });
+        if (!teacher) {
+            return res.status(404).json({ message: 'Teacher not found' });
+        }
+
+        // Fetch all students assigned to this teacher
+        const students = await User.find({ role: 'student', teacher_id });
+
+        res.status(200).json({
+            teacher: teacher.name,
+            students
+        });
+    } catch (err) {
+        console.error('Error fetching students:', err);
+        res.status(500).json({ message: 'Server error', error: err.message });
+    }
+};
+
+
+module.exports = { register, login, analytics, getUserId, getUserById, updateUserProfile ,getTeachers,getStudentsByTeacherId};
