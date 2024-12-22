@@ -127,7 +127,7 @@ const updateQuestion = async (req, res) => {
         const updatedQuestion = await Question.findByIdAndUpdate(
             questionId,
             { question, choices, correctAnswer, questionRat },
-            { new: true } 
+            { new: true }
         );
 
         if (!updatedQuestion) {
@@ -142,4 +142,30 @@ const updateQuestion = async (req, res) => {
     }
 };
 
-module.exports = { addQuestion, getQuestions, getQuestionCount, getQuestionsByTeacherId, deleteQuestionById,updateQuestion };
+
+
+const getQuestionsById = async (req, res) => {
+    const { questionId } = req.body;
+
+    // Ensure questionId is provided
+    if (!questionId) {
+        return res.status(400).json({ message: 'Question ID is required' });
+    }
+
+    try {
+        // Convert the questionId to a MongoDB ObjectId
+        const question = await Question.findOne({ _id: questionId });
+
+        if (!question) {
+            return res.status(404).json({ message: 'No question found with that ID' });
+        }
+
+        res.status(200).json(question);
+    } catch (err) {
+        res.status(500).json({ message: 'Server error', error: err });
+    }
+};
+
+
+
+module.exports = { addQuestion, getQuestions, getQuestionCount, getQuestionsByTeacherId, deleteQuestionById, updateQuestion, getQuestionsById };

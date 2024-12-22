@@ -33,4 +33,25 @@ const addTestResult = async (req, res) => {
     }
 };
 
-module.exports = { addTestResult };
+
+const getTestResultsByTeacherId = async (req, res) => {
+    const { teacherId } = req.body;
+
+    // Validate the input
+    if (!teacherId) {
+        return res.status(400).json({ message: 'Teacher ID is required' });
+    }
+
+    try {
+        // Fetch all test results for the given teacher ID
+        const testResults = await TestResult.find({ teacherId });
+
+        // Respond with the test results
+        res.status(200).json({ message: 'Test results fetched successfully', testResults });
+    } catch (err) {
+        // Handle server errors
+        res.status(500).json({ message: 'Server error', error: err });
+    }
+};
+
+module.exports = { addTestResult ,getTestResultsByTeacherId};
