@@ -28,13 +28,21 @@ const addQuestion = async (req, res) => {
 
 const getQuestions = async (req, res) => {
     try {
-        const questions = await Question.find();
-        if (questions.length === 0) {
-            return res.status(404).json({ message: 'No questions found' });
+        const { teacherId } = req.body;
+        if (!teacherId) {
+            return res.status(400).json({ message: 'Teacher ID is required' });
         }
-        res.status(200).json(questions);
+        const questions = await Question.find({ teacherId });
+        if (questions.length === 0) {
+            return res.status(404).json({ message: `No questions found for teacher ID: ${teacherId}` });
+        }
+        const groupedQuestions = {
+            teacherId,
+            questions,
+        };
+        res.status(200).json(groupedQuestions);
     } catch (err) {
-        res.status(500).json({ message: 'Server error', error: err });
+        res.status(500).json({ message: 'Server error', error: err.message });
     }
 };
 

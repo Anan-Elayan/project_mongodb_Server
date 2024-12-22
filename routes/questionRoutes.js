@@ -7,7 +7,7 @@ router.post('/add', addQuestion);
 router.delete('/deleteQuestionById', deleteQuestionById);
 router.post('/getQuestionsByTeacherId', getQuestionsByTeacherId);
 router.post('/updateQuestion', updateQuestion);
-router.get('/get', getQuestions);
+router.post('/getQuestions', getQuestions);
 router.post('/getQuestionCount', getQuestionCount);
 
 
