@@ -10,11 +10,13 @@ app.use(cors());
 
 const userRoutes = require('./routes/userRoutes');
 const questionRoutes = require('./routes/questionRoutes');
+const test_results = require('./routes/test_results');
 
 require('./config/db');
 
 app.use('/users', userRoutes);
 app.use('/questions', questionRoutes);
+app.use('/test_results', test_results);
 
 
 const port = process.env.PORT || 3000;
