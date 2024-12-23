@@ -169,32 +169,23 @@ const getQuestionsById = async (req, res) => {
 
 const closeQuiz = async (req, res) => {
     const { teacherId } = req.body;
-
-    // Validate that teacherId is provided
     if (!teacherId) {
         return res.status(400).json({ message: 'Teacher ID is required' });
     }
-
     try {
-        // Fetch all questions for the given teacherId
         const questions = await Question.find({ teacherId });
 
         if (questions.length === 0) {
             return res.status(404).json({ message: 'No questions found for the provided teacher ID' });
         }
-
-        // Check if all `closeQuiz` fields are false
         const allCloseQuizFalse = questions.every((q) => q.closeQuiz === false);
-
-        // Update all questions to toggle `closeQuiz` based on the current state
         await Question.updateMany(
             { teacherId },
             { $set: { closeQuiz: allCloseQuizFalse } }
         );
 
-        // Fetch the updated questions
         const updatedQuestions = await Question.find({ teacherId });
-
+        
         res.status(200).json({
             message: `Questions updated successfully. All closeQuiz fields are now set to ${allCloseQuizFalse}`,
             updatedQuestions,
