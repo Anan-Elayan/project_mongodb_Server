@@ -171,7 +171,7 @@ const getStudentsByTeacherId = async (req, res) => {
         }
 
         // Fetch all students assigned to this teacher
-        const students = await User.find({ role: 'student', teacher_id });
+        const students = await User.find({ role: 'student', teacher_id }).sort({ totalScore: -1 });
 
         res.status(200).json({
             teacher: teacher.name,

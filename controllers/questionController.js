@@ -68,17 +68,21 @@ const getQuestionCount = async (req, res) => {
 
 
 // Method to get questions based on teacherId
+// Method to get questions based on teacherId with sorting
 const getQuestionsByTeacherId = async (req, res) => {
-    const { teacherId } = req.body;
+    const { teacherId, sortOrder } = req.body;
 
     // Ensure teacherId is provided
     if (!teacherId) {
         return res.status(400).json({ message: 'Teacher ID is required' });
     }
 
+    // Set default sorting to ascending (1) if no sortOrder is provided
+    const order = sortOrder === 'desc' ? -1 : 1;
+
     try {
-        // Find all questions with the provided teacherId
-        const questions = await Question.find({ teacherId });
+        // Find all questions with the provided teacherId and sort by questionRat
+        const questions = await Question.find({ teacherId }).sort({ questionRat: order });
 
         if (questions.length === 0) {
             return res.status(404).json({ message: 'No questions found for the provided teacher ID' });
@@ -89,6 +93,7 @@ const getQuestionsByTeacherId = async (req, res) => {
         res.status(500).json({ message: 'Server error', error: err });
     }
 };
+
 
 const deleteQuestionById = async (req, res) => {
     const { questionId } = req.body;
@@ -185,7 +190,7 @@ const closeQuiz = async (req, res) => {
         );
 
         const updatedQuestions = await Question.find({ teacherId });
-        
+
         res.status(200).json({
             message: `Questions updated successfully. All closeQuiz fields are now set to ${allCloseQuizFalse}`,
             updatedQuestions,
@@ -197,4 +202,4 @@ const closeQuiz = async (req, res) => {
 
 
 
-module.exports = { addQuestion, getQuestions, getQuestionCount, getQuestionsByTeacherId, deleteQuestionById, updateQuestion, getQuestionsById, closeQuiz};
+module.exports = { addQuestion, getQuestions, getQuestionCount, getQuestionsByTeacherId, deleteQuestionById, updateQuestion, getQuestionsById, closeQuiz };

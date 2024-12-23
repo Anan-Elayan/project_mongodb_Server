@@ -43,7 +43,7 @@ const getTestResultsByTeacherId = async (req, res) => {
     }
 
     try {
-        // Fetch all test results for the given teacher ID
+        // Fetch all test results for the given teacher ID and sort by totalScore descending
         const testResults = await TestResult.find({ teacherId });
 
         // Respond with the test results
