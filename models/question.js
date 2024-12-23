@@ -15,6 +15,7 @@ const questionSchema = new mongoose.Schema({
     correctAnswer: { type: String, required: true },
     questionRat: { type: Number, required: true },
     teacherId: {type: String, required: true},
+    closeQuiz: {type: Boolean, default: false}
 });
 
 const Question = mongoose.model('Question', questionSchema);

@@ -26,7 +26,7 @@ const addTestResult = async (req, res) => {
         await newTestResult.save();
 
         // Respond with a success message and the new test result data
-        res.status(201).json({ message: 'Test result added successfully', testResult: newTestResult });
+        res.status(201).json({ message: 'Test result added successfully', test_results: newTestResult });
     } catch (err) {
         // Handle server errors
         res.status(500).json({ message: 'Server error', error: err });
@@ -54,4 +54,4 @@ const getTestResultsByTeacherId = async (req, res) => {
     }
 };
 
-module.exports = { addTestResult ,getTestResultsByTeacherId};
+module.exports = { addTestResult, getTestResultsByTeacherId };
